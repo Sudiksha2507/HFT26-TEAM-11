@@ -1,56 +1,114 @@
 import json
 import csv
-from collections import Counter
+from pathlib import Path
+from datetime import datetime
+from PIL import Image
 
-# Load image metadata
+from pipeline.burst_merge import merge_bursts
+from pipeline.config import UNIDENTIFIED
+
+# Paths
+OUTPUT_DIR = Path("src/dashboard/public/representative_images")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# Load metadata
 with open("data/subset.csv", "r") as f:
     metadata = list(csv.DictReader(f))
 
-metadata_map = {
-    row["file_name"]: row
-    for row in metadata
-}
+metadata_map = {row["file_name"]: row for row in metadata}
 
-# Load species predictions
+# Load predictions
 with open("data/predictions.json", "r") as f:
     predictions = json.load(f)
 
-sightings = []
+frames = []
 
 for prediction in predictions:
-
     filename = prediction["image"]
     row = metadata_map.get(filename)
 
     if row is None:
         continue
 
-    sightings.append({
-        "image": filename,
-        "species": prediction["species"],
-        "species_confidence": prediction["species_confidence"],
-        "detector_confidence": prediction["detector_confidence"],
-        "bbox": prediction["bbox"],
+    image_path = Path("data/images") / filename
+
+    if not image_path.exists():
+        continue
+
+    species = prediction["species"]
+
+    if species == "unknown":
+        species = UNIDENTIFIED
+
+    timestamp = datetime.strptime(
+        row["timestamp"], "%Y-%m-%d %H:%M:%S"
+    )
+
+    with Image.open(image_path) as img:
+        width, height = img.size
+
+    x1, y1, x2, y2 = prediction["bbox"]
+
+    x1 = max(0, min(x1, width))
+    y1 = max(0, min(y1, height))
+    x2 = max(0, min(x2, width))
+    y2 = max(0, min(y2, height))
+
+    if x2 <= x1 or y2 <= y1:
+        continue
+
+    normalized_box = [
+        round(x1 / width, 6),
+        round(y1 / height, 6),
+        round((x2 - x1) / width, 6),
+        round((y2 - y1) / height, 6)
+    ]
+
+    frames.append({
         "camera_id": row["location"],
-        "timestamp": row["timestamp"],
-        "date": row["timestamp"].split(" ")[0],
-        "hour": int(row["timestamp"].split(" ")[1].split(":")[0])
+        "taken_at": timestamp,
+        "species": species,
+        "confidence": prediction["species_confidence"],
+        "image_id": filename,
+        "rep_box": normalized_box,
+        "image_path": str(image_path)
     })
 
-# Save sightings
-with open("data/sightings.json", "w") as f:
+# Merge detections into sightings
+sightings = merge_bursts(frames)
+
+# Generate representative crops
+for sighting in sightings:
+    image_path = sighting["rep_source_path"]
+
+    with Image.open(image_path) as img:
+        x, y, w, h = sighting["rep_box"]
+
+        left = int(x * img.width)
+        top = int(y * img.height)
+        right = int((x + w) * img.width)
+        bottom = int((y + h) * img.height)
+
+        crop = img.crop((left, top, right, bottom))
+
+        safe_id = sighting["sighting_id"].replace(":", "-")
+        crop_name = f"{safe_id}.jpg"
+        crop_path = OUTPUT_DIR / crop_name
+
+        crop.save(crop_path)
+
+    sighting["rep_image"] = "/representative_images/" + crop_name
+
+    del sighting["rep_source_path"]
+
+# Save dashboard sightings
+output_path = Path("src/dashboard/data/sightings.json")
+output_path.parent.mkdir(parents=True, exist_ok=True)
+
+with open(output_path, "w") as f:
     json.dump(sightings, f, indent=2)
 
-print("Sightings generated successfully!")
+print("Dashboard sightings generated!")
 print("Total sightings:", len(sightings))
-
-print("\nSpecies distribution:")
-counts = Counter(s["species"] for s in sightings)
-
-for species, count in counts.most_common():
-    print(f"{species}: {count}")
-
-print("\nUnique camera locations:",
-      len(set(s["camera_id"] for s in sightings)))
-
-print("Saved to data/sightings.json")
+print("Representative images:", len(sightings))
+print("Saved to:", output_path)
