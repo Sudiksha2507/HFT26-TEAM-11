@@ -1,88 +1,55 @@
-# 🚀 CBIT Hacktoberfest '26 — Project Starter Repository
+# Helix: AI-Powered Wildlife Monitoring & Camera-Trap Analytics
 
-> **Official Public Starter Repository for CBIT Hacktoberfest '26**  
-> *Chaitanya Bharathi Institute of Technology (CBIT), Hyderabad*
+**CBIT Hacktoberfest '26** | Team Helix (HFT26-TEAM-11) | Reg. ID HFEST26-4MPSGQSM
 
----
+| Name | Role |
+|---|---|
+| Sudiksha Gopisetty (Lead) | Integration, deployment, README, demo |
+| Sahasra Bandari | Data pipeline |
+| Dwayitha Reddy | Species classifier |
+| Ria Reddy | Dashboard |
 
-## 📋 Team Information
+## 1. Problem statement
+Researchers manually review thousands of camera-trap images, many empty or repeated.
+We automate detection, species identification, and activity analysis, and report
+results with explicit uncertainty. Dataset: [Caltech Camera Traps (LILA)](https://lila.science/datasets/caltech-camera-traps).
 
-| Attribute | Details |
-| :--- | :--- |
-| **Team Name** | **Helix** |
-| **Team Number** | `TEAM-11` (`HFT26-TEAM-11`) |
-| **Registration ID** | `HFEST26-4MPSGQSM` |
-| **Problem Track** | **Track Selection in Progress** |
-| **Domain** | `General Track` |
-| **Team Leader** | Sudiksha Gopisetty (sudikshagopisetty@gmail.com) |
-| **Institution** | CBIT Hyderabad |
+## 2. Solution overview
+1. MegaDetector filters empty images.
+2. A fine-tuned classifier identifies species on animal crops; low confidence becomes "Unidentified animal".
+3. Frames are merged into sightings (sequence id, else timestamp proximity).
+4. Results are stored as structured data and shown on a dashboard.
+5. An LLM (Featherless) summarises aggregated counts only, with a "what we cannot conclude" section and a template fallback.
 
-### 👥 Team Members
+## 3. Architecture
+See [docs/architecture.md](docs/architecture.md) and [docs/data_contract.md](docs/data_contract.md).
 
-| # | Name | Email | Institution |
-| :--- | :--- | :--- | :--- |
-| 1 | Sahasra Bandari | bandarisahasra07@gmail.com | CBIT Hyderabad |
-| 2 | Dwayitha Reddy | dwayithareddy06@gmail.com | CBIT Hyderabad |
-| 3 | Ria Reddy | riadamidi2006@gmail.com | CBIT Hyderabad |
+## 4. Results
+_Fill from real runs (held-out cameras only):_
+- Detector empty-vs-animal precision/recall: TBD
+- Classifier accuracy (held-out cameras) / per-class metrics / confusion matrix: TBD
+- Fine-tuned vs zero-shot BioCLIP: TBD
 
----
+## 5. Uncertainty and limitations
+Unidentified share, class imbalance, rare species, night/infrared images, camera clock quality,
+and a subset of cameras only. Results are not population estimates.
 
-## 🎯 Problem Statement
-
-### **Track Selection in Progress**
-*Domain:* **General Track**
-
-Details regarding the chosen problem statement track and technical requirements.
-
----
-
-## 🛠️ Contribution & Submission Workflow
-
-All teams must follow the official fork-and-pull-request workflow:
-
-1. **Fork this Repository**:
-   - One team member should click the **Fork** button at the top right to fork this upstream repository to your personal/team GitHub account.
-2. **Add Collaborators**:
-   - In your forked repository, navigate to **Settings > Collaborators** and invite all your registered team members.
-3. **Clone & Develop Locally**:
-   ```bash
-   git clone https://github.com/<your-username>/HFT26-TEAM-11.git
-   cd HFT26-TEAM-11
-   git checkout -b feature/prototype
-   ```
-4. **Commit & Push Regularly**:
-   - Make atomic, descriptive commits throughout the hackathon.
-   ```bash
-   git add .
-   git commit -m "feat: implement core solution architecture"
-   git push origin feature/prototype
-   ```
-5. **Open Pull Request (PR) for Final Submission**:
-   - When ready for evaluation, open a **Pull Request** from your fork's `main` branch back to this upstream repository's `main` branch.
-   - **PR Title Format**: `[SUBMISSION] TEAM-11 - Helix - Track Selection in Progress`
-   - **PR Description Checklist**:
-     - 📌 Solution Overview & Approach
-     - 🏗️ Architecture & Tech Stack Details
-     - 🚀 Local Setup & Installation Instructions
-     - 🎥 Demo Video Link / Live Deployment URL
-     - 📸 Key Screenshots & Visuals
-
----
-
-## 📁 Recommended Project Structure
-
+## 6. Setup
+```bash
+git clone https://github.com/<your-username>/HFT26-TEAM-11.git && cd HFT26-TEAM-11
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env          # add Featherless key
+pytest                        # run tests
+python -m src.pipeline.detect <image_dir>
+cd src/dashboard && npm install && npm run dev
 ```
-.
-├── src/                  # Source code (Frontend / Backend / ML)
-├── docs/                 # Documentation, architecture diagrams, slides
-├── tests/                # Test suites & verification scripts
-├── README.md             # Your project documentation & presentation
-└── LICENSE               # Open-source license (MIT recommended)
-```
+Data and model weights are not committed; download the subset from LILA yourself.
 
----
+## 7. Demo
+Live URL / video (under 3 min): _add link_
 
-## ⚠️ Important Rules & Code of Conduct
-* **Upstream Protection**: Do not push directly to this repository's main branch. All evaluation will be conducted on your submitted Pull Request.
-* **Original Work**: All code submitted must be developed during the hackathon timeline. Open-source libraries and frameworks are welcomed with proper attribution.
-* **Code Freeze**: Final Pull Requests must be submitted before the designated hackathon submission deadline.
+## 8. Credits and licenses
+MegaDetector / PyTorch-Wildlife, timm, BioCLIP, OpenCV, Next.js, shadcn/ui, Leaflet, Featherless.
+Dataset: Caltech Camera Traps via LILA BC (check dataset license and cite). Code: MIT.
+All project code was written during the hackathon.
