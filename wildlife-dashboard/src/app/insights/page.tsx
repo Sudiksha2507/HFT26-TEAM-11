@@ -12,15 +12,20 @@ export default function InsightsPage() {
 
   const prompts = [
     "Which species has the most sightings?",
-    "Summarize recent wildlife activity.",
-    "Which forest zones need closer monitoring?",
-    "Suggest conservation actions based on sightings."
+    "Which camera IDs recorded the most activity?",
+    "What patterns can you identify in hourly wildlife activity?",
+    "What is the average detection confidence?",
+    "What percentage of detections are unidentified?",
+    "Suggest conservation actions based on these observations."
   ];
 
   async function askAI(text = question) {
     if (!text.trim() || loading) return;
 
-    setMessages(prev => [...prev, { role: "user", content: text }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: text }
+    ]);
     setQuestion("");
     setLoading(true);
 
@@ -33,18 +38,23 @@ export default function InsightsPage() {
 
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.error || "AI request failed");
+      if (!response.ok) {
+        throw new Error(data.error || "AI request failed");
+      }
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.answer }
       ]);
     } catch (error) {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: error instanceof Error ? error.message : "Something went wrong."
+          content:
+            error instanceof Error
+              ? error.message
+              : "Something went wrong."
         }
       ]);
     } finally {
@@ -55,16 +65,21 @@ export default function InsightsPage() {
   return (
     <main className="min-h-screen bg-[#07130f] text-white p-8">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="text-emerald-400 text-sm">← Back to dashboard</a>
+        <a href="/" className="text-emerald-400 text-sm">
+          ← Back to dashboard
+        </a>
 
         <p className="text-emerald-400 text-sm tracking-widest mt-8">
           AI-POWERED CONSERVATION
         </p>
 
-        <h1 className="text-4xl font-bold mt-2">Insight Agent</h1>
+        <h1 className="text-4xl font-bold mt-2">
+          Insight Agent
+        </h1>
 
         <p className="text-gray-400 mt-3 mb-8">
-          Ask questions and generate insights from wildlife monitoring data.
+          Explore wildlife patterns and generate conservation insights
+          using actual camera-trap pipeline data.
         </p>
 
         <div className="bg-[#11251c] border border-emerald-900 rounded-2xl p-6">
@@ -72,16 +87,22 @@ export default function InsightsPage() {
             <div className="w-11 h-11 rounded-full bg-emerald-900 flex items-center justify-center">
               AI
             </div>
+
             <div>
-              <h2 className="font-semibold">WildSight Intelligence</h2>
-              <p className="text-xs text-emerald-400">Featherless AI Assistant</p>
+              <h2 className="font-semibold">
+                WildSight Intelligence
+              </h2>
+              <p className="text-xs text-emerald-400">
+                Featherless AI Assistant
+              </p>
             </div>
           </div>
 
           <div className="space-y-4 mb-6 max-h-[450px] overflow-y-auto">
             <div className="bg-[#07130f] rounded-xl p-5 text-gray-300">
-              Hello! I'm your wildlife intelligence assistant. Ask me about
-              species activity, detection patterns and conservation insights.
+              Hello! I'm your WildSight intelligence assistant.
+              Ask me about species distribution, camera activity,
+              detection confidence and conservation insights.
             </div>
 
             {messages.map((message, index) => (
@@ -99,21 +120,20 @@ export default function InsightsPage() {
 
             {loading && (
               <div className="bg-[#07130f] rounded-xl p-4 text-emerald-300">
-                Analyzing your question...
+                Analyzing wildlife data...
               </div>
             )}
           </div>
 
-          <p className="text-sm text-gray-400 mb-3">Suggested questions</p>
+          <p className="text-sm text-gray-400 mb-3">
+            Suggested questions
+          </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-            {prompts.map(prompt => (
+            {prompts.map((prompt) => (
               <button
                 key={prompt}
-                onClick={() => {
-                  setQuestion(prompt);
-                  askAI(prompt);
-                }}
+                onClick={() => askAI(prompt)}
                 disabled={loading}
                 className="text-left text-sm bg-[#193326] hover:bg-emerald-900 border border-emerald-900 rounded-lg p-4 disabled:opacity-50"
               >
@@ -123,7 +143,7 @@ export default function InsightsPage() {
           </div>
 
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
               askAI();
             }}
@@ -131,7 +151,7 @@ export default function InsightsPage() {
           >
             <input
               value={question}
-              onChange={e => setQuestion(e.target.value)}
+              onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ask about wildlife activity..."
               className="flex-1 bg-[#07130f] border border-emerald-900 rounded-lg px-4 py-3 outline-none focus:border-emerald-400"
             />
@@ -147,7 +167,8 @@ export default function InsightsPage() {
         </div>
 
         <p className="text-gray-500 text-xs mt-4">
-          AI-generated responses may require verification before conservation decisions.
+          AI-generated recommendations are suggestions and should
+          be evaluated before conservation decisions.
         </p>
       </div>
     </main>

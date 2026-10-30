@@ -1,49 +1,42 @@
 
-const detections = [
-  {
-    species: "Indian Leopard",
-    zone: "Camera Trap 04 · Northern Range",
-    time: "10:42 PM",
-    confidence: "98.6%",
-    image:
-      "https://static.wixstatic.com/media/df65a0_f5026aec196a4309b86b0d3d4510aeb7~mv2.png/v1/fill/w_1000,h_667,al_c,q_90/df65a0_f5026aec196a4309b86b0d3d4510aeb7~mv2.png",
-  },
-  {
-    species: "Wildlife activity",
-    zone: "Camera Trap 08 · Forest Trail",
-    time: "09:18 PM",
-    confidence: "Detection pending",
-    image:
-      "https://images.takeshape.io/86ce9525-f5f2-4e97-81ba-54e8ce933da7/dev/76768ce0-5a61-44a7-b193-e2aaa7b429ff/Other%20mammals%20detected%20and%20instantly%20transmitted%20by%20Trailguard%20AI%20include%20leopard%2C%20gaur%2C%20sloth%20bear%2C%20sambar%2C%20langur%2C%20and%20chital.%20Image%20credit%20NTCA%2C%20Madhya%20Pradesh%20forest%20department%2C%20Global%20Tiger%20Forum%2C%20and%20Resolve.jpeg",
-  },
-];
+import { sightings, wildlifeAggregates } from "@/lib/sightings";
+
+const identifiedSpecies = Object.keys(
+  wildlifeAggregates.species_counts
+).filter((species) => species !== "unidentified").length;
+
+const detections = sightings
+  .filter((s, index, arr) =>
+    arr.findIndex((item) => item.species === s.species) === index
+  )
+  .slice(0, 4);
 
 const stats = [
-  { label: "Camera traps deployed", value: "48", note: "Sample system data" },
-  { label: "Wildlife detections", value: "1,284", note: "Sample records" },
-  { label: "Species identified", value: "36", note: "Sample records" },
-  { label: "Pending reviews", value: "08", note: "Sample records" },
+  {
+    label: "Camera traps deployed",
+    value: Object.keys(wildlifeAggregates.location_counts).length.toString(),
+    note: "Unique camera IDs",
+  },
+  {
+    label: "Wildlife sightings",
+    value: sightings.length.toLocaleString(),
+    note: "Actual pipeline records",
+  },
+  {
+    label: "Species identified",
+    value: identifiedSpecies.toString(),
+    note: "Excluding unidentified",
+  },
+  {
+    label: "Unidentified detections",
+    value: `${wildlifeAggregates.pct_unidentified}%`,
+    note: "Pipeline statistics",
+  },
 ];
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#101a16] text-[#edf2eb]">
-      
-<nav className="flex flex-wrap gap-3 mb-8">
-  <a href="/" className="px-4 py-2 rounded-lg bg-emerald-800 text-white hover:bg-emerald-700">
-    Dashboard
-  </a>
-  <a href="/sightings" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
-    Wildlife Sightings
-  </a>
-  <a href="/map" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
-    Monitoring Map
-  </a>
-    <a href="/insights" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
-    Insight Agent
-  </a>
-</nav>
-
       <aside className="border-b border-white/10 px-6 py-5 md:px-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <div>
@@ -62,6 +55,21 @@ export default function Home() {
       </aside>
 
       <div className="mx-auto max-w-7xl px-6 py-9 md:px-10">
+        <nav className="flex flex-wrap gap-3 mb-8">
+          <a href="/" className="px-4 py-2 rounded-lg bg-emerald-800 text-white hover:bg-emerald-700">
+            Dashboard
+          </a>
+          <a href="/sightings" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
+            Wildlife Sightings
+          </a>
+          <a href="/map" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
+            Monitoring Map
+          </a>
+          <a href="/insights" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
+            Insight Agent
+          </a>
+        </nav>
+
         <section className="mb-8">
           <p className="text-sm text-[#a6c88a]">CONSERVATION INTELLIGENCE</p>
           <h2 className="mt-2 text-3xl font-bold md:text-4xl">
@@ -90,14 +98,14 @@ export default function Home() {
           <div className="mb-5">
             <h3 className="text-xl font-semibold">Camera-trap activity</h3>
             <p className="mt-1 text-sm text-gray-400">
-              Visual examples of wildlife monitoring imagery
+              Actual representative images from wildlife detections
             </p>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
             {detections.map((item) => (
               <article
-                key={item.species}
+                key={item.id}
                 className="overflow-hidden rounded-2xl border border-white/10 bg-[#192720]"
               >
                 <div className="relative h-64 bg-[#25372d]">
@@ -113,15 +121,15 @@ export default function Home() {
                 <div className="p-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <h4 className="text-lg font-semibold">
+                      <h4 className="text-lg font-semibold capitalize">
                         {item.species}
                       </h4>
                       <p className="mt-1 text-sm text-gray-400">
-                        {item.zone}
+                        {item.location}
                       </p>
                     </div>
                     <span className="rounded-lg bg-green-400/10 px-3 py-2 text-sm text-green-300">
-                      {item.confidence}
+                      {item.confidence.toFixed(2)}%
                     </span>
                   </div>
                   <p className="mt-4 text-xs text-gray-500">
@@ -141,12 +149,12 @@ export default function Home() {
             From camera traps to actionable intelligence
           </h3>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-300">
-            The platform will process camera-trap images, identify wildlife
-            species, analyse detection patterns and help conservation teams
-            monitor activity across forest zones.
+            The platform processes camera-trap images, identifies wildlife
+            species, analyses detection patterns and supports conservation
+            monitoring through AI-powered insights.
           </p>
           <p className="mt-4 text-xs text-gray-500">
-            AI Insight Agent integration planned.
+            Wildlife statistics sourced from the detection pipeline.
           </p>
         </section>
 
