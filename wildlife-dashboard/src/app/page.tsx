@@ -1,158 +1,159 @@
-const stats = [
-  { label: "Total Sightings", value: "1,284", change: "+12.8%", icon: "◉" },
-  { label: "Species Detected", value: "36", change: "+4 new", icon: "🐾" },
-  { label: "Active Cameras", value: "48", change: "42 online", icon: "📷" },
-  { label: "Alerts Generated", value: "12", change: "3 critical", icon: "⚠" },
+
+const detections = [
+  {
+    species: "Indian Leopard",
+    zone: "Camera Trap 04 · Northern Range",
+    time: "10:42 PM",
+    confidence: "98.6%",
+    image:
+      "https://static.wixstatic.com/media/df65a0_f5026aec196a4309b86b0d3d4510aeb7~mv2.png/v1/fill/w_1000,h_667,al_c,q_90/df65a0_f5026aec196a4309b86b0d3d4510aeb7~mv2.png",
+  },
+  {
+    species: "Wildlife activity",
+    zone: "Camera Trap 08 · Forest Trail",
+    time: "09:18 PM",
+    confidence: "Detection pending",
+    image:
+      "https://images.takeshape.io/86ce9525-f5f2-4e97-81ba-54e8ce933da7/dev/76768ce0-5a61-44a7-b193-e2aaa7b429ff/Other%20mammals%20detected%20and%20instantly%20transmitted%20by%20Trailguard%20AI%20include%20leopard%2C%20gaur%2C%20sloth%20bear%2C%20sambar%2C%20langur%2C%20and%20chital.%20Image%20credit%20NTCA%2C%20Madhya%20Pradesh%20forest%20department%2C%20Global%20Tiger%20Forum%2C%20and%20Resolve.jpeg",
+  },
 ];
 
-const sightings = [
-  { species: "Bengal Tiger", location: "Zone A - Forest North", time: "10:42 AM", confidence: "98.6%", status: "Verified", emoji: "🐅" },
-  { species: "Asian Elephant", location: "Zone B - River Side", time: "09:18 AM", confidence: "96.2%", status: "Verified", emoji: "🐘" },
-  { species: "Indian Leopard", location: "Zone C - Hill Range", time: "08:56 AM", confidence: "92.4%", status: "Review", emoji: "🐆" },
-  { species: "Spotted Deer", location: "Zone A - Forest North", time: "08:21 AM", confidence: "97.1%", status: "Verified", emoji: "🦌" },
+const stats = [
+  { label: "Camera traps deployed", value: "48", note: "Sample system data" },
+  { label: "Wildlife detections", value: "1,284", note: "Sample records" },
+  { label: "Species identified", value: "36", note: "Sample records" },
+  { label: "Pending reviews", value: "08", note: "Sample records" },
 ];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#f4f6f2] text-gray-800 md:flex">
+    <main className="min-h-screen bg-[#101a16] text-[#edf2eb]">
+      
+<nav className="flex flex-wrap gap-3 mb-8">
+  <a href="/" className="px-4 py-2 rounded-lg bg-emerald-800 text-white hover:bg-emerald-700">
+    Dashboard
+  </a>
+  <a href="/sightings" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
+    Wildlife Sightings
+  </a>
+  <a href="/map" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
+    Monitoring Map
+  </a>
+    <a href="/insights" className="px-4 py-2 rounded-lg bg-[#11251c] border border-emerald-900 text-white hover:bg-emerald-900">
+    Insight Agent
+  </a>
+</nav>
 
-      <aside className="w-full bg-[#142c24] p-6 text-white md:min-h-screen md:w-64">
-        <div className="mb-10">
-          <h1 className="text-2xl font-bold tracking-wide">WildTrack<span className="text-[#a5c98b]">.</span></h1>
-          <p className="mt-1 text-xs text-gray-400">INTELLIGENT WILDLIFE MONITORING</p>
-        </div>
-
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400">Workspace</p>
-
-        <nav className="space-y-2">
-          <div className="rounded-lg bg-[#345441] px-4 py-3 font-medium">▦ &nbsp; Dashboard</div>
-          <div className="px-4 py-3 text-gray-300">◉ &nbsp; Wildlife Sightings</div>
-          <div className="px-4 py-3 text-gray-300">⌖ &nbsp; Camera Locations</div>
-          <div className="px-4 py-3 text-gray-300">♧ &nbsp; Species Database</div>
-          <div className="px-4 py-3 text-gray-300">⚑ &nbsp; Alerts & Reports</div>
-        </nav>
-
-        <div className="mt-12 rounded-xl border border-[#456052] bg-[#203b30] p-4">
-          <p className="text-sm font-semibold">Monitoring Status</p>
-          <div className="mt-3 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-400"></span>
-            <span className="text-sm text-gray-300">System Operational</span>
+      <aside className="border-b border-white/10 px-6 py-5 md:px-10">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              WILD<span className="text-[#a6c88a]">SIGHT</span>
+            </h1>
+            <p className="mt-1 text-xs tracking-[0.2em] text-gray-400">
+              AI-POWERED WILDLIFE INTELLIGENCE
+            </p>
           </div>
-          <p className="mt-2 text-xs text-gray-400">Last synced: Just now</p>
+          <div className="flex items-center gap-2 rounded-full border border-green-400/20 bg-green-400/10 px-4 py-2 text-sm text-green-300">
+            <span className="h-2 w-2 rounded-full bg-green-400" />
+            Monitoring workspace
+          </div>
         </div>
       </aside>
 
-      <main className="min-w-0 flex-1 p-5 md:p-8">
+      <div className="mx-auto max-w-7xl px-6 py-9 md:px-10">
+        <section className="mb-8">
+          <p className="text-sm text-[#a6c88a]">CONSERVATION INTELLIGENCE</p>
+          <h2 className="mt-2 text-3xl font-bold md:text-4xl">
+            Wildlife Monitoring
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+            Observe wildlife activity, review camera-trap detections and
+            explore AI-generated conservation insights.
+          </p>
+        </section>
 
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm text-gray-500">Wildlife Intelligence / Overview</p>
-            <h2 className="mt-1 text-3xl font-bold text-[#1b3529]">Dashboard</h2>
-            <p className="mt-1 text-sm text-gray-500">Monitor wildlife activity and detection insights.</p>
-          </div>
-
-          <div className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm shadow-sm">
-            <span className="text-gray-500">● </span>
-            Live Monitoring
-          </div>
-        </header>
-
-        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-500">{stat.label}</p>
-                <span className="text-xl">{stat.icon}</span>
-              </div>
-              <h3 className="mt-4 text-3xl font-bold text-[#1b3529]">{stat.value}</h3>
-              <p className="mt-2 text-xs font-medium text-green-700">{stat.change} <span className="font-normal text-gray-400">this month</span></p>
+            <div
+              key={stat.label}
+              className="rounded-2xl border border-white/10 bg-[#192720] p-5"
+            >
+              <p className="text-sm text-gray-400">{stat.label}</p>
+              <p className="mt-4 text-3xl font-bold">{stat.value}</p>
+              <p className="mt-2 text-xs text-[#a6c88a]">{stat.note}</p>
             </div>
           ))}
         </section>
 
-        <section className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
-
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm xl:col-span-2">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-bold text-[#1b3529]">Recent Wildlife Sightings</h3>
-                <p className="mt-1 text-sm text-gray-500">Latest detections from camera traps</p>
-              </div>
-              <button className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium hover:bg-gray-50">
-                View All →
-              </button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-gray-100 text-xs uppercase text-gray-400">
-                    <th className="pb-4 font-medium">Species</th>
-                    <th className="pb-4 font-medium">Location</th>
-                    <th className="pb-4 font-medium">Time</th>
-                    <th className="pb-4 font-medium">Confidence</th>
-                    <th className="pb-4 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sightings.map((item) => (
-                    <tr key={item.species} className="border-b border-gray-50">
-                      <td className="py-5 font-semibold">
-                        <span className="mr-2">{item.emoji}</span>{item.species}
-                      </td>
-                      <td className="py-5 text-gray-500">{item.location}</td>
-                      <td className="py-5 text-gray-500">{item.time}</td>
-                      <td className="py-5 font-medium">{item.confidence}</td>
-                      <td className="py-5">
-                        <span className={`rounded-full px-3 py-1 text-xs font-medium ${item.status === "Verified" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                          {item.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <section className="mt-10">
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold">Camera-trap activity</h3>
+            <p className="mt-1 text-sm text-gray-400">
+              Visual examples of wildlife monitoring imagery
+            </p>
           </div>
 
-          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-bold text-[#1b3529]">Detection Summary</h3>
-            <p className="mt-1 text-sm text-gray-500">Species activity overview</p>
-
-            <div className="mt-8 space-y-6">
-              {[
-                { name: "Bengal Tiger", count: 42, percent: "84%", color: "bg-emerald-700" },
-                { name: "Asian Elephant", count: 35, percent: "70%", color: "bg-lime-600" },
-                { name: "Indian Leopard", count: 28, percent: "56%", color: "bg-amber-500" },
-                { name: "Spotted Deer", count: 19, percent: "38%", color: "bg-teal-600" },
-              ].map((item) => (
-                <div key={item.name}>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="font-medium">{item.name}</span>
-                    <span className="text-gray-500">{item.count}</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-                    <div className={`h-full rounded-full ${item.color}`} style={{ width: item.percent }}></div>
-                  </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {detections.map((item) => (
+              <article
+                key={item.species}
+                className="overflow-hidden rounded-2xl border border-white/10 bg-[#192720]"
+              >
+                <div className="relative h-64 bg-[#25372d]">
+                  <img
+                    src={item.image}
+                    alt={item.species}
+                    className="h-full w-full object-cover"
+                  />
+                  <span className="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1 text-xs text-green-300">
+                    CAMERA TRAP IMAGE
+                  </span>
                 </div>
-              ))}
-            </div>
-
-            <div className="mt-9 rounded-lg bg-[#f1f5ee] p-4">
-              <p className="text-sm font-semibold text-[#1b3529]">AI Detection Insights</p>
-              <p className="mt-2 text-xs leading-5 text-gray-600">
-                Wildlife activity is being monitored across multiple forest zones. Detection records are updated as new camera data is processed.
-              </p>
-            </div>
+                <div className="p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h4 className="text-lg font-semibold">
+                        {item.species}
+                      </h4>
+                      <p className="mt-1 text-sm text-gray-400">
+                        {item.zone}
+                      </p>
+                    </div>
+                    <span className="rounded-lg bg-green-400/10 px-3 py-2 text-sm text-green-300">
+                      {item.confidence}
+                    </span>
+                  </div>
+                  <p className="mt-4 text-xs text-gray-500">
+                    Capture time: {item.time}
+                  </p>
+                </div>
+              </article>
+            ))}
           </div>
-
         </section>
 
-        <footer className="mt-8 border-t border-gray-200 py-5 text-center text-xs text-gray-400">
-          WildTrack Intelligence Platform · Wildlife Conservation Monitoring
-        </footer>
+        <section className="mt-10 rounded-2xl border border-[#718d65]/30 bg-[#1b2d23] p-6">
+          <p className="text-sm font-semibold text-[#b5d39d]">
+            CONSERVATION INSIGHT
+          </p>
+          <h3 className="mt-3 text-xl font-semibold">
+            From camera traps to actionable intelligence
+          </h3>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-300">
+            The platform will process camera-trap images, identify wildlife
+            species, analyse detection patterns and help conservation teams
+            monitor activity across forest zones.
+          </p>
+          <p className="mt-4 text-xs text-gray-500">
+            AI Insight Agent integration planned.
+          </p>
+        </section>
 
-      </main>
-    </div>
+        <footer className="mt-12 border-t border-white/10 py-6 text-center text-xs text-gray-500">
+          WILDSIGHT · Wildlife Conservation Intelligence Platform
+        </footer>
+      </div>
+    </main>
   );
 }
