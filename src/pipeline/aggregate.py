@@ -1,20 +1,38 @@
-"""Build aggregates.json for the dashboard and the insight agent."""
+import json
 from collections import Counter, defaultdict
-from datetime import datetime
 
+# Load sightings
+with open("data/sightings.json", "r") as f:
+    sightings = json.load(f)
 
-def build_aggregates(sightings, total_images, empty_images):
-    species_counts = Counter(s["species"] for s in sightings)
-    hourly = defaultdict(lambda: [0] * 24)
-    for s in sightings:
-        hourly[s["species"]][datetime.fromisoformat(s["start_time"]).hour] += 1
-    n = len(sightings) or 1
-    return {
-        "species_counts": dict(species_counts),
-        "hourly_counts": dict(hourly),
-        "location_counts": dict(Counter(s["camera_id"] for s in sightings)),
-        "pct_empty": round(100 * empty_images / max(total_images, 1), 1),
-        "pct_unidentified": round(100 * species_counts.get("unidentified", 0) / n, 1),
-        "mean_confidence": round(sum(s["confidence"] for s in sightings) / n, 3),
-        "n_sightings": len(sightings),
-    }
+species_counts = Counter()
+camera_counts = Counter()
+hourly_counts = Counter()
+daily_counts = Counter()
+
+for s in sightings:
+    species_counts[s["species"]] += 1
+    camera_counts[s["camera_id"]] += 1
+    hourly_counts[s["hour"]] += 1
+    daily_counts[s["date"]] += 1
+
+aggregates = {
+    "total_sightings": len(sightings),
+    "unique_cameras": len(camera_counts),
+    "species_counts": dict(species_counts.most_common()),
+    "camera_counts": dict(camera_counts.most_common()),
+    "hourly_activity": dict(sorted(hourly_counts.items())),
+    "daily_sightings": dict(sorted(daily_counts.items())),
+    "unknown_percentage": round(
+        species_counts["unknown"] / len(sightings) * 100, 2
+    )
+}
+
+with open("data/aggregates.json", "w") as f:
+    json.dump(aggregates, f, indent=2)
+
+print("Analytics generated successfully!")
+print("Total sightings:", aggregates["total_sightings"])
+print("Unique cameras:", aggregates["unique_cameras"])
+print("Unknown predictions:", aggregates["unknown_percentage"], "%")
+print("Saved to data/aggregates.json")
