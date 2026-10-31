@@ -78,31 +78,30 @@ for prediction in predictions:
 sightings = merge_bursts(frames)
 
 # Generate representative crops
+# Generate representative original images
 for sighting in sightings:
     image_path = sighting["rep_source_path"]
 
+    safe_id = sighting["sighting_id"].replace(":", "-")
+    image_name = f"{safe_id}.jpg"
+
+    output_dir = Path(
+        "wildlife-dashboard/public/camera_images"
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_path = output_dir / image_name
+
     with Image.open(image_path) as img:
-        x, y, w, h = sighting["rep_box"]
+        img = img.convert("RGB")
+        img.save(output_path, "JPEG", quality=95)
 
-        left = int(x * img.width)
-        top = int(y * img.height)
-        right = int((x + w) * img.width)
-        bottom = int((y + h) * img.height)
-
-        crop = img.crop((left, top, right, bottom))
-
-        safe_id = sighting["sighting_id"].replace(":", "-")
-        crop_name = f"{safe_id}.jpg"
-        crop_path = OUTPUT_DIR / crop_name
-
-        crop.save(crop_path)
-
-    sighting["rep_image"] = "/representative_images/" + crop_name
+    sighting["rep_image"] = "/camera_images/" + image_name
 
     del sighting["rep_source_path"]
 
 # Save dashboard sightings
-output_path = Path("src/dashboard/data/sightings.json")
+output_path = Path("wildlife-dashboard/src/data/sightings.json")
 output_path.parent.mkdir(parents=True, exist_ok=True)
 
 with open(output_path, "w") as f:
